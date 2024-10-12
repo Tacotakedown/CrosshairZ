@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+AppPackages/
+BundleArtifacts/
+CrosshairZ_TemporaryKey.pfx
+CrosshairZ.sln
+CrosshairZ.csproj.user

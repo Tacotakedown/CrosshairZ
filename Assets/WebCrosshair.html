@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crosshair</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        #crosshair {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+        }
+
+        .cross-line {
+            position: absolute;
+            background-color: white;
+        }
+
+        #horizontal-top {
+            width: 0px; 
+            height: 0px;
+            top: 50%;
+            left: calc(50% - var(--gap));
+            transform: translate(-50%, -50%);
+        }
+
+        #horizontal-bottom {
+            width: 0px; 
+            height: 0px; 
+            top: 50%; 
+            background-color: red;
+            left: calc(50% + var(--gap));
+            transform: translate(-50%, -50%);
+        }
+
+        #vertical-top {
+            width: 0px; 
+            height: 0px;
+            top: calc(50% - var(--gap));
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #vertical-bottom {
+            width: 0px; 
+            height: 0px;
+            top: calc(50% + var(--gap));
+            left: 50%; 
+            transform: translate(-50%, -50%);
+        }
+
+        #center-dot {
+            position: absolute;
+            width: 0px;
+            height: 0px; 
+            background-color: white; 
+            border-radius: 50%;
+            top: 50%;
+            left: 50%; 
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <script>function updateCrosshair(length, thickness, dotSize, color, showDot, gap) {
+            logToCSharp('Crosshair updated with: ' + length + ', ' + thickness + ', ' + dotSize + ', ' + color + ', ' + showDot + ', ' + gap);
+
+            document.documentElement.style.setProperty('--gap', gap + 'px');
+
+            document.getElementById('horizontal-top').style.width = length + 'px';
+            document.getElementById('horizontal-bottom').style.width = length + 'px';
+            document.getElementById('horizontal-top').style.height = thickness + 'px';
+            document.getElementById('horizontal-bottom').style.height = thickness + 'px';
+
+            document.getElementById('vertical-top').style.height = length + 'px';
+            document.getElementById('vertical-bottom').style.height = length + 'px';
+            document.getElementById('vertical-top').style.width = thickness + 'px';
+            document.getElementById('vertical-bottom').style.width = thickness + 'px';
+
+            document.querySelectorAll('.cross-line').forEach(el => {
+                el.style.backgroundColor = color;
+            });
+
+            document.getElementById('center-dot').style.width = dotSize + 'px';
+            document.getElementById('center-dot').style.height = dotSize + 'px';
+            document.getElementById('center-dot').style.backgroundColor = showDot === "True" ? color : 'transparent';
+        }
+
+        function logToCSharp(message) {
+            window.external.notify(message);
+        }
+
+        function TalkToMe(args) {
+            logToCSharp("Talk To Me called with: " + args);
+        }</script>
+    <div id="crosshair">
+        <div id="horizontal-top" class="cross-line"></div>
+        <div id="horizontal-bottom" class="cross-line"></div>
+        <div id="vertical-top" class="cross-line"></div>
+        <div id="vertical-bottom" class="cross-line"></div>
+        <div id="center-dot"></div>
+    </div>
+</body>
+</html>
