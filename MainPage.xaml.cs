@@ -39,6 +39,9 @@ namespace CrosshairZ
         public double BorderSize { get; set; }
         [JsonProperty]
         public string BorderColor { get; set; }
+        [JsonProperty]
+        public double Opacity { get; set; }
+
 
         public CrosshairData()
         {
@@ -51,6 +54,7 @@ namespace CrosshairZ
             ShowBorder = true;
             BorderSize = 1.0;
             BorderColor = "#000000";
+            Opacity = 1.0;
         }
     }
 
@@ -147,10 +151,17 @@ namespace CrosshairZ
                     ? Visibility.Collapsed
                     : Visibility.Visible;
                 Debug.WriteLine($"SettingsStackPanel visibility set to: {settingsStackPanel.Visibility}");
+               
+
             }
             else
             {
                 Debug.WriteLine("settingsStackPanel is null");
+            }
+
+            if(Guide != null)
+            {
+                Guide.Visibility = (displayMode == XboxGameBarDisplayMode.PinnedOnly) ? Visibility.Collapsed : Visibility.Visible;
             }
 
 
@@ -236,6 +247,7 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.Color = "#" + args.NewColor.R.ToString("X2") + args.NewColor.G.ToString("X2") + args.NewColor.B.ToString("X2");
+                    mProfileCollection.Profiles[selectedIndex].Crosshair.Opacity = args.NewColor.A;
                     if (initilized)
                     {
                         await UpdateCrosshair();
@@ -326,6 +338,7 @@ namespace CrosshairZ
                 mProfileCollection.Profiles[selectedIndex].Crosshair.ShowBorder.ToString(),
                 mProfileCollection.Profiles[selectedIndex].Crosshair.BorderSize.ToString(),
                 mProfileCollection.Profiles[selectedIndex].Crosshair.BorderColor.ToString(),
+                mProfileCollection.Profiles[selectedIndex].Crosshair.Opacity.ToString(),
                     });
 
                    await SaveProfile(true);
@@ -611,9 +624,10 @@ namespace CrosshairZ
 
         private  void ExportCrosshairButton_Click(object sender, RoutedEventArgs e)
         {
+            int selectedIndex = (ProfileSelector.SelectedIndex == -1) ? 0 : ProfileSelector.SelectedIndex;
             try
             {
-                string crosshairJson = Newtonsoft.Json.JsonConvert.SerializeObject(mProfileCollection.Profiles[ProfileSelector.SelectedIndex].Crosshair);
+                string crosshairJson = Newtonsoft.Json.JsonConvert.SerializeObject(mProfileCollection.Profiles[selectedIndex].Crosshair);
 
                 var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
                 dataPackage.SetText(crosshairJson);
@@ -629,6 +643,7 @@ namespace CrosshairZ
 
         private async void ImportCrosshairButton_Click(object sender, RoutedEventArgs e)
         {
+            int selectedIndex = (ProfileSelector.SelectedIndex == -1) ? 0 : ProfileSelector.SelectedIndex;
             try
             {
                 ImportStatusMessage.Visibility = Visibility.Collapsed;
@@ -642,7 +657,7 @@ namespace CrosshairZ
 
                     if (importedCrosshair != null)
                     {
-                        mProfileCollection.Profiles[ProfileSelector.SelectedIndex].Crosshair = importedCrosshair;
+                        mProfileCollection.Profiles[selectedIndex].Crosshair = importedCrosshair;
                         await UpdateCrosshair();
 
                         System.Diagnostics.Debug.WriteLine("Crosshair settings imported successfully.");

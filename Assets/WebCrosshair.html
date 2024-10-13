@@ -72,8 +72,8 @@
     </style>
 </head>
 <body>
-    <script>function updateCrosshair(length, thickness, dotSize, color, showDot, gap, showBorder, borderSize, borderColor) {
-            logToCSharp('Crosshair updated with: Length:' + length + ', Thickness:' + thickness + ', DotSize:' + dotSize + ', Color:' + color + ', ShowDot:' + showDot + ', Gap:' + gap + ", ShowBorder:" + showBorder + ", BorderSize:" + borderSize + ", BorderColor: " + borderColor);
+    <script>function updateCrosshair(length, thickness, dotSize, color, showDot, gap, showBorder, borderSize, borderColor, Opacity = 1) {
+            logToCSharp('Crosshair updated with: Length:' + length + ', Thickness:' + thickness + ', DotSize:' + dotSize + ', Color:' + color + ', ShowDot:' + showDot + ', Gap:' + gap + ", ShowBorder:" + showBorder + ", BorderSize:" + borderSize + ", BorderColor: " + borderColor + ", Opacity: " + Opacity);
 
             document.documentElement.style.setProperty('--gap', gap + 'px');
 
@@ -98,6 +98,8 @@
             document.getElementById('center-dot').style.width = dotSize + 'px';
             document.getElementById('center-dot').style.height = dotSize + 'px';
             document.getElementById('center-dot').style.backgroundColor = showDot === "True" ? color : 'transparent';
+
+            document.getElementById('crosshair').style.opacity = Opacity;
 
         }
 
