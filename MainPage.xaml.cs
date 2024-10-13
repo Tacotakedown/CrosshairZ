@@ -42,15 +42,15 @@ namespace CrosshairZ
 
         public CrosshairData()
         {
-            Length = 10;
-            Thickness = 1;
-            DotSize = 5;
-            Color = "#FFFFFF";
+            Length = 6.0;
+            Thickness = 3.0;
+            DotSize = 0.0;
+            Color = "#06E8FF";
             ShowDot = true;
-            Gap = 4;
-            ShowBorder = false;
-            BorderSize = 1;
-            BorderColor = "#FFFFFF";
+            Gap = 6.0;
+            ShowBorder = true;
+            BorderSize = 1.0;
+            BorderColor = "#000000";
         }
     }
 
@@ -82,6 +82,7 @@ namespace CrosshairZ
         public MainPage()
         {
             InitializeComponent();
+            mProfileCollection = new CrosshairProfileCollection();
             // crosshairData = new CrosshairData();
             Crosshair.ScriptNotify += Crosshair_ScriptNotify;
         }
@@ -91,6 +92,9 @@ namespace CrosshairZ
             _widget = widget;
             _widget.GameBarDisplayModeChanged += Widget_DisplayModeChanged;
             UpdateSettingsPanelVisibility(_widget.GameBarDisplayMode);
+             LoadProfile();
+            LoadProfilesUI();
+           
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -104,9 +108,9 @@ namespace CrosshairZ
                 UpdateSettingsPanelVisibility(_widget.GameBarDisplayMode);
             }
 
-            await LoadProfile();
-            LoadProfilesUI();
+            
         }
+
 
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -163,6 +167,7 @@ namespace CrosshairZ
                     if (initilized)
                     {
                         await UpdateCrosshair();
+
                     }
                    
                 }
@@ -217,6 +222,7 @@ namespace CrosshairZ
                     if (initilized)
                     {
                         await UpdateCrosshair();
+                        
                     }
                 }
             }
@@ -342,8 +348,8 @@ namespace CrosshairZ
                     {
                         mProfileCollection.Profiles[0].Crosshair = mProfileCollection.Profiles[selectedIndex].Crosshair;
                     }
-                    StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-                    StorageFile file = await localFolder.CreateFileAsync("crosshair_profiles.json", CreationCollisionOption.ReplaceExisting);
+                    StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
+                    StorageFile file = await roamingFolder.CreateFileAsync("crosshair_profiles.json", CreationCollisionOption.ReplaceExisting);
                     string json = JsonConvert.SerializeObject(mProfileCollection, Formatting.Indented);
 
                     await FileIO.WriteTextAsync(file, json);
@@ -375,7 +381,18 @@ namespace CrosshairZ
             }
         }
 
-      
+       private void  RefreshProfilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                 LoadProfilesUI();
+            }catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
+        }
+
+
 
         private async Task LoadProfile() 
         {
@@ -383,8 +400,8 @@ namespace CrosshairZ
             Debug.WriteLine(selectedIndex);
             try
             {
-                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-                StorageFile file = await localFolder.GetFileAsync("crosshair_profiles.json");
+                StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
+                StorageFile file = await roamingFolder.GetFileAsync("crosshair_profiles.json");
                 string json = await FileIO.ReadTextAsync(file);
                 Debug.WriteLine(json);
 
@@ -394,7 +411,7 @@ namespace CrosshairZ
                     Debug.WriteLine(profileCollection);
                     if (profileCollection == null)
                     {
-                        mProfileCollection = new CrosshairProfileCollection();
+                     
                         mProfileCollection.Profiles.Add(new CrosshairProfile());
                         mProfileCollection.Profiles[0].Name = "Autosave";
                         CrosshairData DefaultCrosshair = new CrosshairData()
@@ -441,7 +458,26 @@ namespace CrosshairZ
             catch (FileNotFoundException)
             {
                 Debug.WriteLine("No profile file found, using default settings.");
-               // mProfileCollection.Profiles[selectedIndex].Crosshair = new CrosshairData();
+
+             
+                var defaultProfile = new CrosshairProfile
+                {
+                    Name = "Autosave",
+                    Crosshair = new CrosshairData() 
+                };
+
+                mProfileCollection.Profiles.Add(defaultProfile);
+
+                string defaultJson = JsonConvert.SerializeObject(mProfileCollection, Formatting.Indented);
+
+                StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
+                StorageFile newFile = await roamingFolder.CreateFileAsync("crosshair_profiles.json", CreationCollisionOption.ReplaceExisting);
+                await FileIO.WriteTextAsync(newFile, defaultJson);
+                UpdateUIControls();
+                await UpdateCrosshair();
+                initilized = true;
+   
+
             }
             catch (Exception ex)
             {
@@ -455,7 +491,10 @@ namespace CrosshairZ
 
         private void LoadProfilesUI()
         {
-            ProfileSelector.ItemsSource = mProfileCollection.Profiles.Select(p => p.Name).ToList();
+            if (mProfileCollection != null)
+            {
+                ProfileSelector.ItemsSource = mProfileCollection.Profiles.Select(p => p.Name).ToList();
+            }
         }
 
         private async void ProfileSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -482,8 +521,9 @@ namespace CrosshairZ
                 await SaveProfile();
                 await UpdateCrosshair();
                 UpdateUIControls();
+                await LoadProfile();
                 LoadProfilesUI();
-               await LoadProfile();
+           
             }
         }
 
@@ -518,11 +558,12 @@ namespace CrosshairZ
                 {
                     profileName = "Unnamed Profile";
                 }
+                int selectedIndex = (ProfileSelector.SelectedIndex == -1) ? 0 : ProfileSelector.SelectedIndex;
 
                 var newProfile = new CrosshairProfile
                 {
                     Name = profileName,
-                    Crosshair = mProfileCollection.Profiles[ProfileSelector.SelectedIndex].Crosshair
+                    Crosshair = mProfileCollection.Profiles[selectedIndex].Crosshair
                 };
 
                 mProfileCollection.Profiles.Add(newProfile);
