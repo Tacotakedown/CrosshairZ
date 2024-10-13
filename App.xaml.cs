@@ -77,8 +77,8 @@ namespace CrosshairZ
         {
             Frame rootFrame = Window.Current.Content as Frame;
             rootFrame.Navigate(typeof(MainPage), _mXboxGameBarWidget);
-            rootFrame.Width = 500;
-            rootFrame.Height = 500;
+            rootFrame.Width = 1026;
+            rootFrame.Height = 1026;
             Size size = new Size(rootFrame.Width, rootFrame.Height);
             ApplicationView.GetForCurrentView().SetPreferredMinSize(size);
             ApplicationView.GetForCurrentView().TryResizeView(size);

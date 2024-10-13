@@ -23,6 +23,7 @@
         .cross-line {
             position: absolute;
             background-color: white;
+
         }
 
         #horizontal-top {
@@ -71,8 +72,8 @@
     </style>
 </head>
 <body>
-    <script>function updateCrosshair(length, thickness, dotSize, color, showDot, gap) {
-            logToCSharp('Crosshair updated with: ' + length + ', ' + thickness + ', ' + dotSize + ', ' + color + ', ' + showDot + ', ' + gap);
+    <script>function updateCrosshair(length, thickness, dotSize, color, showDot, gap, showBorder, borderSize, borderColor) {
+            logToCSharp('Crosshair updated with: Length:' + length + ', Thickness:' + thickness + ', DotSize:' + dotSize + ', Color:' + color + ', ShowDot:' + showDot + ', Gap:' + gap + ", ShowBorder:" + showBorder + ", BorderSize:" + borderSize + ", BorderColor: " + borderColor);
 
             document.documentElement.style.setProperty('--gap', gap + 'px');
 
@@ -88,12 +89,21 @@
 
             document.querySelectorAll('.cross-line').forEach(el => {
                 el.style.backgroundColor = color;
+                el.style.border = showBorder === "True" ? borderSize + "px solid" + borderColor : "none";
+            });
+            document.querySelectorAll('.center-dot').forEach(el => {
+                el.style.border = showBorder === "True" ? borderSize + "px solid" + borderColor : "none";
             });
 
             document.getElementById('center-dot').style.width = dotSize + 'px';
             document.getElementById('center-dot').style.height = dotSize + 'px';
             document.getElementById('center-dot').style.backgroundColor = showDot === "True" ? color : 'transparent';
+
         }
+
+
+
+        
 
         function logToCSharp(message) {
             window.external.notify(message);

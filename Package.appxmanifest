@@ -45,10 +45,10 @@
       <Extensions>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="microsoft.gameBarUIExtension"
-									  Id="ExtensionCrosshair"
-									   DisplayName="Crosshair Widget"
-									   Description="Dockable widget"
-									   PublicFolder="ExtensionCrosshair">
+                    Id="ExtensionCrosshair"
+                    DisplayName="Crosshair Widget"
+                    Description="Dockable widget"
+                    PublicFolder="ExtensionCrosshair">
             <uap3:Properties>
               <GameBarWidget Type="Standard">
                 <HomeMenuVisible>true</HomeMenuVisible>
@@ -60,8 +60,8 @@
                     <Width>1024</Width>
                     <MinWidth>1024</MinWidth>
                     <MaxWidth>1024</MaxWidth>
-                    <Height>600</Height>
-                    <MinHeight>600</MinHeight>
+                    <Height>800</Height>
+                    <MinHeight>800</MinHeight>
                     <MaxHeight>1024</MaxHeight>
                   </Size>
                   <ResizeSupported>
