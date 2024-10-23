@@ -24,23 +24,23 @@
 
 
         <!-- Crosshair settings (sliders, toggles) -->
-        <StackPanel x:Name="settingsStackPanel" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="SteelBlue" BorderThickness="2" CornerRadius="10" Background="Black" Padding="5" Width="378" Grid.Column="1" Height="791">
+        <StackPanel x:Name="settingsStackPanel" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="SteelBlue" BorderThickness="2" CornerRadius="10" Background="Black" Padding="5" Width="469" Grid.Column="1" Height="791">
             <TextBlock Text="Crosshair Length" />
-            <Slider x:Name="LengthSlider" Minimum="0" Maximum="50" ValueChanged="LengthSlider_ValueChanged"/>
+            <Slider x:Name="LengthSlider" StepFrequency="0.1" Minimum="0.0" Maximum="200.0" ValueChanged="LengthSlider_ValueChanged"/>
 
             <TextBlock Text="Crosshair Thickness" />
-            <Slider x:Name="ThicknessSlider"  Minimum="0" Maximum="40" ValueChanged="ThicknessSlider_ValueChanged"/>
+            <Slider x:Name="ThicknessSlider" StepFrequency="0.1"  Minimum="0.0" Maximum="100.0" ValueChanged="ThicknessSlider_ValueChanged"/>
 
             <TextBlock Text="Dot Size" />
-            <Slider x:Name="DotSizeSlider" Minimum="0" Maximum="40" ValueChanged="DotSizeSlider_ValueChanged"/>
+            <Slider x:Name="DotSizeSlider" StepFrequency="0.1" Minimum="0.0" Maximum="100.0" ValueChanged="DotSizeSlider_ValueChanged"/>
 
             <TextBlock Text="Gap"/>
-            <Slider x:Name="GapSlider" Minimum="0" Maximum="40" ValueChanged="GapSlider_ValueChanged"/>
+            <Slider x:Name="GapSlider" StepFrequency="0.1" Minimum="-100.0" Maximum="100.0" ValueChanged="GapSlider_ValueChanged"/>
 
             <CheckBox x:Name="checkBoxBorder" Content="Show Border" Checked="checkBoxBorder_Checked" Unchecked="checkBoxBorder_Unchecked"/>
 
             <TextBlock Text="BorderWidth"/>
-            <Slider x:Name="BorderSlider" Minimum="0" Maximum="40" ValueChanged="BorderSlider_ValueChanged"/>
+            <Slider x:Name="BorderSlider" StepFrequency="0.1" Minimum="0.0" Maximum="100.0" ValueChanged="BorderSlider_ValueChanged"/>
 
 
 

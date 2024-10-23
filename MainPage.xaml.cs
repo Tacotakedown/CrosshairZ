@@ -14,8 +14,6 @@ using Newtonsoft.Json;
 using Windows.Storage;
 
 
-//TODO: Refactor usage of CrosshairData class in MainPage since we are storing the crosshair data in the CrosshairProfileCollection class 
-
 namespace CrosshairZ
 {
 
@@ -76,10 +74,9 @@ namespace CrosshairZ
 
     public sealed partial class MainPage : Page
     {
-        // private CrosshairData crosshairData;
         private XboxGameBarWidget _widget;
         private CrosshairProfileCollection mProfileCollection;
-        private bool initilized = false;
+        private bool initialized = false;
         private const string ProfileFileName = "crosshair_profile.json";
 
 
@@ -87,7 +84,6 @@ namespace CrosshairZ
         {
             InitializeComponent();
             mProfileCollection = new CrosshairProfileCollection();
-            // crosshairData = new CrosshairData();
             Crosshair.ScriptNotify += Crosshair_ScriptNotify;
         }
 
@@ -96,12 +92,12 @@ namespace CrosshairZ
             _widget = widget;
             _widget.GameBarDisplayModeChanged += Widget_DisplayModeChanged;
             UpdateSettingsPanelVisibility(_widget.GameBarDisplayMode);
-             LoadProfile();
+            LoadProfile();
             LoadProfilesUI();
            
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -129,7 +125,7 @@ namespace CrosshairZ
 
         private void Crosshair_ScriptNotify(object sender, NotifyEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"JavaScript Log: {e.Value}");
+            //System.Diagnostics.Debug.WriteLine($"JavaScript Log: {e.Value}");
         }
 
         private async void Widget_DisplayModeChanged(XboxGameBarWidget sender, object args)
@@ -143,20 +139,20 @@ namespace CrosshairZ
         private void UpdateSettingsPanelVisibility(XboxGameBarDisplayMode displayMode)
         {
 
-            Debug.WriteLine($"UpdateSettingsPanelVisibility called with mode: {displayMode}");
+          //  Debug.WriteLine($"UpdateSettingsPanelVisibility called with mode: {displayMode}");
 
             if (settingsStackPanel != null)
             {
                 settingsStackPanel.Visibility = (displayMode == XboxGameBarDisplayMode.PinnedOnly)
                     ? Visibility.Collapsed
                     : Visibility.Visible;
-                Debug.WriteLine($"SettingsStackPanel visibility set to: {settingsStackPanel.Visibility}");
+              //  Debug.WriteLine($"SettingsStackPanel visibility set to: {settingsStackPanel.Visibility}");
                
 
             }
             else
             {
-                Debug.WriteLine("settingsStackPanel is null");
+             //   Debug.WriteLine("settingsStackPanel is null");
             }
 
             if(Guide != null)
@@ -175,7 +171,7 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.Length = e.NewValue;
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
 
@@ -184,7 +180,7 @@ namespace CrosshairZ
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("crosshairData is null.");
+                  //  System.Diagnostics.Debug.WriteLine("crosshairData is null.");
                 }
             }
 
@@ -198,7 +194,7 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.Thickness = e.NewValue;
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
                     }
@@ -214,7 +210,7 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.DotSize = e.NewValue;
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
                     }
@@ -230,7 +226,7 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.BorderSize = e.NewValue;
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
                         
@@ -248,7 +244,7 @@ namespace CrosshairZ
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.Color = "#" + args.NewColor.R.ToString("X2") + args.NewColor.G.ToString("X2") + args.NewColor.B.ToString("X2");
                     mProfileCollection.Profiles[selectedIndex].Crosshair.Opacity = args.NewColor.A;
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
                     }
@@ -264,7 +260,7 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.BorderColor = "#" + args.NewColor.R.ToString("X2") + args.NewColor.G.ToString("X2") + args.NewColor.B.ToString("X2");
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
                     }
@@ -282,7 +278,7 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.Gap = e.NewValue;
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
                     }
@@ -298,9 +294,14 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.ShowBorder = true;
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
+                    }
+                    else
+                    {
+                        await LoadProfile();
+                        LoadProfilesUI();
                     }
                 }
             }
@@ -313,7 +314,7 @@ namespace CrosshairZ
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
                     mProfileCollection.Profiles[selectedIndex].Crosshair.ShowBorder = false;
-                    if (initilized)
+                    if (initialized)
                     {
                         await UpdateCrosshair();
                     }
@@ -345,7 +346,7 @@ namespace CrosshairZ
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error updating crosshair: {ex.Message}");
+                   // System.Diagnostics.Debug.WriteLine($"Error updating crosshair: {ex.Message}");
                 }
             }
         }
@@ -367,7 +368,7 @@ namespace CrosshairZ
 
                     await FileIO.WriteTextAsync(file, json);
 
-                    Debug.WriteLine("Profiles saved successfully");
+                  //  Debug.WriteLine("Profiles saved successfully");
                 }
                 catch (Exception ex)
                 {
@@ -447,7 +448,6 @@ namespace CrosshairZ
                     {
                         mProfileCollection = profileCollection;
                         Debug.WriteLine(profileCollection);
-                      // await UpdateCrosshair();
                     }
 
 
@@ -456,7 +456,7 @@ namespace CrosshairZ
                         Debug.WriteLine($"Profile '{profileCollection.Profiles[selectedIndex].Name}' loaded successfully.");
                         UpdateUIControls();
                         await UpdateCrosshair();
-                        initilized = true;
+                        initialized = true;
                   
                 }
                 catch (JsonException ex)
@@ -488,7 +488,7 @@ namespace CrosshairZ
                 await FileIO.WriteTextAsync(newFile, defaultJson);
                 UpdateUIControls();
                 await UpdateCrosshair();
-                initilized = true;
+                initialized = true;
    
 
             }
@@ -496,7 +496,6 @@ namespace CrosshairZ
             {
                 Debug.WriteLine($"Error loading profile: {ex.Message}");
                 Debug.WriteLine(selectedIndex);
-               // mProfileCollection.Profiles[selectedIndex].Crosshair = new CrosshairData();
             }
         }
 
@@ -525,7 +524,6 @@ namespace CrosshairZ
 
         private async void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
         {
-         
             if (ProfileSelector.SelectedIndex > 0)
             {
                 mProfileCollection.Profiles.RemoveAt(ProfileSelector.SelectedIndex);
@@ -536,7 +534,6 @@ namespace CrosshairZ
                 UpdateUIControls();
                 await LoadProfile();
                 LoadProfilesUI();
-           
             }
         }
 

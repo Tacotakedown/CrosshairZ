@@ -1,125 +1,193 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Crosshair</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: transparent;
-        }
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+      }
 
-        #crosshair {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
-        }
-
-        .cross-line {
-            position: absolute;
-            background-color: white;
-
-        }
-
-        #horizontal-top {
-            width: 0px; 
-            height: 0px;
-            top: 50%;
-            left: calc(50% - var(--gap));
-            transform: translate(-50%, -50%);
-        }
-
-        #horizontal-bottom {
-            width: 0px; 
-            height: 0px; 
-            top: 50%; 
-            background-color: red;
-            left: calc(50% + var(--gap));
-            transform: translate(-50%, -50%);
-        }
-
-        #vertical-top {
-            width: 0px; 
-            height: 0px;
-            top: calc(50% - var(--gap));
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        #vertical-bottom {
-            width: 0px; 
-            height: 0px;
-            top: calc(50% + var(--gap));
-            left: 50%; 
-            transform: translate(-50%, -50%);
-        }
-
-        #center-dot {
-            position: absolute;
-            width: 0px;
-            height: 0px; 
-            background-color: white; 
-            border-radius: 50%;
-            top: 50%;
-            left: 50%; 
-            transform: translate(-50%, -50%);
-        }
+      #crosshair-svg {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
     </style>
-</head>
-<body>
-    <script>function updateCrosshair(length, thickness, dotSize, color, showDot, gap, showBorder, borderSize, borderColor, Opacity = 1) {
-            logToCSharp('Crosshair updated with: Length:' + length + ', Thickness:' + thickness + ', DotSize:' + dotSize + ', Color:' + color + ', ShowDot:' + showDot + ', Gap:' + gap + ", ShowBorder:" + showBorder + ", BorderSize:" + borderSize + ", BorderColor: " + borderColor + ", Opacity: " + Opacity);
+  </head>
+  <body>
+    <script>
+      function updateCrosshair(
+        length,
+        thickness,
+        dotSize,
+        color,
+        showDot,
+        gap,
+        showBorder,
+        borderSize,
+        borderColor,
+        Opacity = 1
+      ) {
+        logToCSharp(
+          "Crosshair updated with: Length:" +
+            length +
+            ", Thickness:" +
+            thickness +
+            ", DotSize:" +
+            dotSize +
+            ", Color:" +
+            color +
+            ", ShowDot:" +
+            showDot +
+            ", Gap:" +
+            gap +
+            ", ShowBorder:" +
+            showBorder +
+            ", BorderSize:" +
+            borderSize +
+            ", BorderColor: " +
+            borderColor +
+            ", Opacity: " +
+            Opacity
+        );
 
-            document.documentElement.style.setProperty('--gap', gap + 'px');
+        let correctedThickness = thickness * 5;
+        let correctedLength = length;
 
-            document.getElementById('horizontal-top').style.width = length + 'px';
-            document.getElementById('horizontal-bottom').style.width = length + 'px';
-            document.getElementById('horizontal-top').style.height = thickness + 'px';
-            document.getElementById('horizontal-bottom').style.height = thickness + 'px';
+        const halfLength = correctedLength / 2;
+        const halfGap = gap / 2;
+        const center = 500;
 
-            document.getElementById('vertical-top').style.height = length + 'px';
-            document.getElementById('vertical-bottom').style.height = length + 'px';
-            document.getElementById('vertical-top').style.width = thickness + 'px';
-            document.getElementById('vertical-bottom').style.width = thickness + 'px';
+        document
+          .getElementById("horizontal-left")
+          .setAttribute("x", center - (halfLength + halfGap));
+        document
+          .getElementById("horizontal-left")
+          .setAttribute("y", center - correctedThickness / 2);
+        document
+          .getElementById("horizontal-left")
+          .setAttribute("width", halfLength);
+        document
+          .getElementById("horizontal-left")
+          .setAttribute("height", correctedThickness);
+        document
+          .getElementById("horizontal-right")
+          .setAttribute("x", center + halfGap);
+        document
+          .getElementById("horizontal-right")
+          .setAttribute("y", center - correctedThickness / 2);
+        document
+          .getElementById("horizontal-right")
+          .setAttribute("width", halfLength);
+        document
+          .getElementById("horizontal-right")
+          .setAttribute("height", correctedThickness);
 
-            document.querySelectorAll('.cross-line').forEach(el => {
-                el.style.backgroundColor = color;
-                el.style.border = showBorder === "True" ? borderSize + "px solid" + borderColor : "none";
-            });
-            document.querySelectorAll('.center-dot').forEach(el => {
-                el.style.border = showBorder === "True" ? borderSize + "px solid" + borderColor : "none";
-            });
+        document
+          .getElementById("vertical-top")
+          .setAttribute("y", center - halfGap - halfLength);
+        document
+          .getElementById("vertical-top")
+          .setAttribute("x", center - correctedThickness / 2);
+        document
+          .getElementById("vertical-top")
+          .setAttribute("height", halfLength);
+        document
+          .getElementById("vertical-top")
+          .setAttribute("width", correctedThickness);
+        document
+          .getElementById("vertical-bottom")
+          .setAttribute("y", center + halfGap);
+        document
+          .getElementById("vertical-bottom")
+          .setAttribute("x", center - correctedThickness / 2);
+        document
+          .getElementById("vertical-bottom")
+          .setAttribute("height", halfLength);
+        document
+          .getElementById("vertical-bottom")
+          .setAttribute("width", correctedThickness);
 
-            document.getElementById('center-dot').style.width = dotSize + 'px';
-            document.getElementById('center-dot').style.height = dotSize + 'px';
-            document.getElementById('center-dot').style.backgroundColor = showDot === "True" ? color : 'transparent';
+        document.querySelectorAll(".cross-rect").forEach((el) => {
+          el.setAttribute("fill", color);
+          el.setAttribute("opacity", Opacity);
 
-            document.getElementById('crosshair').style.opacity = Opacity;
+          if (showBorder === "True") {
+            el.setAttribute("stroke", borderColor);
+            el.setAttribute("stroke-width", borderSize);
+          } else {
+            el.setAttribute("stroke", "none");
+            el.setAttribute("stroke-width", 0);
+          }
+        });
 
-        }
+        const centerDot = document.getElementById("center-dot");
+        centerDot.setAttribute("cx", center);
+        centerDot.setAttribute("cy", center);
+        centerDot.setAttribute("r", dotSize / 2);
+        centerDot.setAttribute(
+          "fill",
+          showDot === "True" ? color : "transparent"
+        );
 
+        document.getElementById("crosshair-svg").style.opacity = Opacity;
+      }
 
+      function logToCSharp(message) {
+        window.external.notify(message);
+      }
 
-        
+      function TalkToMe(args) {
+        logToCSharp("Talk To Me called with: " + args);
+      }
+    </script>
 
-        function logToCSharp(message) {
-            window.external.notify(message);
-        }
+    <svg
+      id="crosshair-svg"
+      width="200px"
+      height="200px"
+      viewBox="0 0 1000 1000"
+    >
+      <rect
+        id="horizontal-left"
+        class="cross-rect"
+        x="0"
+        y="0"
+        width="0"
+        height="10"
+      />
+      <rect
+        id="horizontal-right"
+        class="cross-rect"
+        x="0"
+        y="0"
+        width="0"
+        height="10"
+      />
 
-        function TalkToMe(args) {
-            logToCSharp("Talk To Me called with: " + args);
-        }</script>
-    <div id="crosshair">
-        <div id="horizontal-top" class="cross-line"></div>
-        <div id="horizontal-bottom" class="cross-line"></div>
-        <div id="vertical-top" class="cross-line"></div>
-        <div id="vertical-bottom" class="cross-line"></div>
-        <div id="center-dot"></div>
-    </div>
-</body>
+      <rect
+        id="vertical-top"
+        class="cross-rect"
+        x="0"
+        y="0"
+        width="10"
+        height="0"
+      />
+      <rect
+        id="vertical-bottom"
+        class="cross-rect"
+        x="0"
+        y="0"
+        width="10"
+        height="0"
+      />
+
+      <circle id="center-dot" cx="500" cy="500" r="0" />
+    </svg>
+  </body>
 </html>

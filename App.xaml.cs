@@ -1,21 +1,11 @@
 ﻿using Microsoft.Gaming.XboxGameBar;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace CrosshairZ
@@ -99,9 +89,10 @@ namespace CrosshairZ
             if (rootFrame == null)
             {
 
-                rootFrame = new Frame();
-
-                rootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
+                rootFrame = new Frame
+                {
+                    Language = Windows.Globalization.ApplicationLanguages.Languages[0]
+                };
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
