@@ -17,15 +17,18 @@
                              ClearColor="Transparent"
                              Grid.ColumnSpan="2"
                              Draw="OnDrawCrosshair" />
-        <StackPanel Spacing="20"
+        <StackPanel Spacing="700"
                     x:Name="Guide">
-            <TextBlock Foreground="LightSteelBlue"
-                       Text="Ensure that click through is enabled and you pin the widget with the Pin icon" />
-            <TextBlock Foreground="LightSteelBlue"
-                       TextWrapping="Wrap"
-                       Text="The app is automatically placed in the center of your screen upon opening however if you move it manually, the 'Center Crosshair' button will center it again" />
-            <TextBlock Foreground="LightSteelBlue"
-                       Text="If your profiles fail to load, press the 'Refresh Profiles' button" />
+            <StackPanel Spacing="20">
+                <TextBlock Foreground="LightSteelBlue"
+            Text="• Ensure that click through is enabled(🖱️ button on the top of Game Bar)" />
+                <TextBlock Foreground="LightSteelBlue"
+                            Text="• Pin the widget (📌 button) when you use the crosshair" />
+            </StackPanel>
+
+
+            <TextBlock Foreground="RosyBrown" FontSize="12"
+             Text="Issues? Submit an Issue on github.com/Tacotakedown/CrosshairZ or DM taco._ on Discord" />
         </StackPanel>
         <!-- Crosshair settings (sliders, toggles) -->
         <StackPanel x:Name="settingsStackPanel"
@@ -39,12 +42,29 @@
                     Width="469"
                     Grid.Column="1"
                     Height="791">
-            <TextBlock Text="Crosshair Length" />
-            <Slider x:Name="LengthSlider"
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" >
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Crosshair Height" />
+                    <Slider x:Name="HeightSlider"
                     StepFrequency="0.1"
                     Minimum="0.0"
+                            Width="180"
                     Maximum="200.0"
-                    ValueChanged="LengthSlider_ValueChanged" />
+                    ValueChanged="HeightSlider_ValueChanged" />         
+                </StackPanel>
+                <Button x:Name="LinkButton" Content="🔗" Width="50" Click="OnLinkButtonClick" />
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Crosshair Width" />
+                    <Slider x:Name="WidthSlider"
+                     StepFrequency="0.1"
+                     Minimum="0.0"
+                     Maximum="200.0"
+                            Width="180"
+                ValueChanged="WidthSlider_ValueChanged" />
+                </StackPanel>
+
+            </StackPanel>
+           
             <TextBlock Text="Crosshair Thickness" />
             <Slider x:Name="ThicknessSlider"
                     StepFrequency="0.1"

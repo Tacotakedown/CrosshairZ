@@ -15,6 +15,7 @@ using Windows.Storage;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System.Numerics;
+using Newtonsoft.Json.Linq;
 
 
 namespace CrosshairZ
@@ -23,7 +24,9 @@ namespace CrosshairZ
     public class CrosshairData
     {
         [JsonProperty]
-        public double Length { get; set; }
+        public double Width { get; set; }
+        [JsonProperty]
+        public double Height { get; set; }
         [JsonProperty]
         public double Thickness { get; set; }
         [JsonProperty]
@@ -48,7 +51,8 @@ namespace CrosshairZ
 
         public CrosshairData()
         {
-            Length = 6.0;
+            Width = 6.0;
+            Height = 6.0;
             Thickness = 3.0;
             DotSize = 0.0;
             Color = "#06E8FF";
@@ -84,6 +88,7 @@ namespace CrosshairZ
         private CrosshairProfileCollection mProfileCollection;
         private bool initialized = false;
         private const string ProfileFileName = "crosshair_profile.json";
+        private bool isLinked = true;
 
 
         public MainPage()
@@ -151,17 +156,21 @@ namespace CrosshairZ
             }
         }
 
-        private async void LengthSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        private async void HeightSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (ProfileSelector != null)
             {
                 int selectedIndex = (ProfileSelector.SelectedIndex == -1) ? 0 : ProfileSelector.SelectedIndex;
                 if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
                 {
-                    mProfileCollection.Profiles[selectedIndex].Crosshair.Length = e.NewValue;
+                    mProfileCollection.Profiles[selectedIndex].Crosshair.Height = e.NewValue;
                     if (initialized)
                     {
                         await UpdateCrosshair();
+                        if(isLinked)
+                        {
+                            WidthSlider.Value = e.NewValue;
+                        }
                     }
                 }
                 else
@@ -170,6 +179,49 @@ namespace CrosshairZ
                 }
             }
 
+        }
+
+        private async void WidthSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (ProfileSelector != null)
+            {
+                int selectedIndex = (ProfileSelector.SelectedIndex == -1) ? 0 : ProfileSelector.SelectedIndex;
+                if (mProfileCollection != null && mProfileCollection.Profiles[selectedIndex].Crosshair != null)
+                {
+                    mProfileCollection.Profiles[selectedIndex].Crosshair.Width = e.NewValue;
+                    if (initialized)
+                    {
+                        await UpdateCrosshair();
+                        if (isLinked)
+                        {
+                            HeightSlider.Value = e.NewValue;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("crosshairData is null.");
+                }
+            }
+
+        }
+
+
+        private void OnLinkButtonClick(object sender, RoutedEventArgs e)
+        {
+           
+            isLinked = !isLinked;
+
+   
+            if (isLinked)
+            {
+                LinkButton.Content = "🔗"; 
+                WidthSlider.Value = HeightSlider.Value;
+            }
+            else
+            {
+                LinkButton.Content = "🔓";
+            }
         }
 
         private async void ThicknessSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -350,7 +402,8 @@ namespace CrosshairZ
                 float centerX = (float)sender.ActualWidth / 2;
                 float centerY = (float)sender.ActualHeight / 2;
 
-                float length = (float)mProfileCollection.Profiles[selectedIndex].Crosshair.Length;
+                float width = (float)mProfileCollection.Profiles[selectedIndex].Crosshair.Width;
+                float height = (float)mProfileCollection.Profiles[selectedIndex].Crosshair.Height;
                 float thickness = (float)mProfileCollection.Profiles[selectedIndex].Crosshair.Thickness;
                 float gap = (float)mProfileCollection.Profiles[selectedIndex].Crosshair.Gap;
                 float dotThickness = (float)mProfileCollection.Profiles[selectedIndex].Crosshair.DotSize;
@@ -397,25 +450,27 @@ namespace CrosshairZ
 
                 args.DrawingSession.Antialiasing = antiAliasing;
 
+                // Borders ------------------------------------------
                 if (showBorder)
                 {
-                    // Borders ------------------------------------------
-                    args.DrawingSession.DrawLine(adjustedCenterX - length - gap - borderSize / 2, adjustedCenterY, adjustedCenterX - gap + borderSize / 2, adjustedCenterY, borderColor, borderSize + effectiveThickness); // Left line
-                    args.DrawingSession.DrawLine(adjustedCenterX + gap - borderSize / 2, adjustedCenterY, adjustedCenterX + length + gap + borderSize / 2, adjustedCenterY, borderColor, borderSize + effectiveThickness); // Right line
-                    args.DrawingSession.DrawLine(adjustedCenterX, adjustedCenterY - length - gap - borderSize / 2, adjustedCenterX, adjustedCenterY - gap + borderSize / 2, borderColor, borderSize + effectiveThickness); // Top line
-                    args.DrawingSession.DrawLine(adjustedCenterX, adjustedCenterY + gap - borderSize / 2, adjustedCenterX, adjustedCenterY + length + gap + borderSize / 2, borderColor, borderSize + effectiveThickness); // Bottom line
+                    if (width > 0.0 && height > 0.0)
+                    {
+                        args.DrawingSession.DrawLine(adjustedCenterX - width - gap - borderSize / 2, adjustedCenterY, adjustedCenterX - gap + borderSize / 2, adjustedCenterY, borderColor, borderSize + effectiveThickness); // Left line
+                        args.DrawingSession.DrawLine(adjustedCenterX + gap - borderSize / 2, adjustedCenterY, adjustedCenterX + width + gap + borderSize / 2, adjustedCenterY, borderColor, borderSize + effectiveThickness); // Right line
+                        args.DrawingSession.DrawLine(adjustedCenterX, adjustedCenterY - height - gap - borderSize / 2, adjustedCenterX, adjustedCenterY - gap + borderSize / 2, borderColor, borderSize + effectiveThickness); // Top line
+                        args.DrawingSession.DrawLine(adjustedCenterX, adjustedCenterY + gap - borderSize / 2, adjustedCenterX, adjustedCenterY + height + gap + borderSize / 2, borderColor, borderSize + effectiveThickness); // Bottom line
+                    }
                     if (dotThickness != 0.0)
                     {
                         args.DrawingSession.FillCircle(adjustedCenterX, adjustedCenterY, dotThickness + borderSize / 2, borderColor);
                     }
-
                 }
 
                 // Crosshair ----------------------------------------
-                args.DrawingSession.DrawLine(adjustedCenterX - length - gap, adjustedCenterY, adjustedCenterX - gap, adjustedCenterY, crosshairColor, effectiveThickness); // Left line
-                args.DrawingSession.DrawLine(adjustedCenterX + gap, adjustedCenterY, adjustedCenterX + length + gap, adjustedCenterY, crosshairColor, effectiveThickness); // Right line
-                args.DrawingSession.DrawLine(adjustedCenterX, adjustedCenterY - length - gap, adjustedCenterX, adjustedCenterY - gap, crosshairColor, effectiveThickness); // Top line
-                args.DrawingSession.DrawLine(adjustedCenterX, adjustedCenterY + gap, adjustedCenterX, adjustedCenterY + length + gap, crosshairColor, effectiveThickness); // Bottom line
+                args.DrawingSession.DrawLine(adjustedCenterX - width - gap, adjustedCenterY, adjustedCenterX - gap, adjustedCenterY, crosshairColor, effectiveThickness); // Left line
+                args.DrawingSession.DrawLine(adjustedCenterX + gap, adjustedCenterY, adjustedCenterX + width + gap, adjustedCenterY, crosshairColor, effectiveThickness); // Right line
+                args.DrawingSession.DrawLine(adjustedCenterX, adjustedCenterY - height - gap, adjustedCenterX, adjustedCenterY - gap, crosshairColor, effectiveThickness); // Top line
+                args.DrawingSession.DrawLine(adjustedCenterX, adjustedCenterY + gap, adjustedCenterX, adjustedCenterY + height + gap, crosshairColor, effectiveThickness); // Bottom line
                 args.DrawingSession.FillCircle(adjustedCenterX, adjustedCenterY, dotThickness, crosshairColor);
             }
         }
@@ -540,14 +595,15 @@ namespace CrosshairZ
                         mProfileCollection.Profiles[0].Name = "Autosave";
                         CrosshairData DefaultCrosshair = new CrosshairData()
                         {
-                            Length = 6.0,
-                            Thickness = 3.0,
+                            Width = 1.2,
+                            Height = 1.2,
+                            Thickness = 0.0,
                             DotSize = 0.0,
-                            Color = "#06E8FF",
+                            Color = "#82FF43",
                             ShowDot = true,
-                            Gap = 6.0,
+                            Gap = 1.2,
                             ShowBorder = true,
-                            BorderSize = 1.0,
+                            BorderSize = 2.0,
                             BorderColor = "#000000",
                             AntiAliasing = false,
                         };
@@ -686,7 +742,21 @@ namespace CrosshairZ
         private void UpdateUIControls()
         {
             int selectedIndex = (ProfileSelector.SelectedIndex == -1) ? 0 : ProfileSelector.SelectedIndex;
-            LengthSlider.Value = mProfileCollection.Profiles[selectedIndex].Crosshair.Length;
+
+            var height = mProfileCollection.Profiles[selectedIndex].Crosshair.Height;
+            var width = mProfileCollection.Profiles[selectedIndex].Crosshair.Width;
+            if (Math.Round( width,2) != Math.Round(height, 2))
+            {
+                isLinked = false;
+                LinkButton.Content = "🔓";
+            }
+            else
+            {
+                LinkButton.Content = "🔗";
+            }
+
+            HeightSlider.Value = mProfileCollection.Profiles[selectedIndex].Crosshair.Height;
+            WidthSlider.Value = mProfileCollection.Profiles[selectedIndex].Crosshair.Width;
             ThicknessSlider.Value = mProfileCollection.Profiles[selectedIndex].Crosshair.Thickness;
             DotSizeSlider.Value = mProfileCollection.Profiles[selectedIndex].Crosshair.DotSize;
             GapSlider.Value = mProfileCollection.Profiles[selectedIndex].Crosshair.Gap;
@@ -720,10 +790,17 @@ namespace CrosshairZ
             int selectedIndex = (ProfileSelector.SelectedIndex == -1) ? 0 : ProfileSelector.SelectedIndex;
             try
             {
-                string crosshairJson = Newtonsoft.Json.JsonConvert.SerializeObject(mProfileCollection.Profiles[selectedIndex].Crosshair);
+                var crosshair = mProfileCollection.Profiles[selectedIndex].Crosshair;
+
+                string compactExport = $"{Math.Round(crosshair.Width, 2)};{Math.Round(crosshair.Height, 2)};" +
+                                       $"{Math.Round(crosshair.Thickness, 2)};{Math.Round(crosshair.DotSize, 2)};" +
+                                       $"{crosshair.Color};{crosshair.ShowDot};{Math.Round(crosshair.Gap, 2)};" +
+                                       $"{crosshair.ShowBorder};{Math.Round(crosshair.BorderSize, 2)};" +
+                                       $"{crosshair.BorderColor};{Math.Round(crosshair.Opacity, 2)};" +
+                                       $"{crosshair.AntiAliasing}";
 
                 var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-                dataPackage.SetText(crosshairJson);
+                dataPackage.SetText(compactExport);
                 Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
 
                 Debug.WriteLine("Crosshair settings exported to clipboard.");
@@ -744,12 +821,27 @@ namespace CrosshairZ
                 var dataPackageView = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
                 if (dataPackageView.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.Text))
                 {
-                    string crosshairJson = await dataPackageView.GetTextAsync();
+                    string compactImport = await dataPackageView.GetTextAsync();
+                    var values = compactImport.Split(';');
 
-                    CrosshairData importedCrosshair = Newtonsoft.Json.JsonConvert.DeserializeObject<CrosshairData>(crosshairJson);
-
-                    if (importedCrosshair != null)
+                    if (values.Length == 12)
                     {
+                        CrosshairData importedCrosshair = new CrosshairData
+                        {
+                            Width = double.Parse(values[0]),
+                            Height = double.Parse(values[1]),
+                            Thickness = double.Parse(values[2]),
+                            DotSize = double.Parse(values[3]),
+                            Color = values[4],
+                            ShowDot = bool.Parse(values[5]),
+                            Gap = double.Parse(values[6]),
+                            ShowBorder = bool.Parse(values[7]),
+                            BorderSize = double.Parse(values[8]),
+                            BorderColor = values[9],
+                            Opacity = double.Parse(values[10]),
+                            AntiAliasing = bool.Parse(values[11])
+                        };
+
                         mProfileCollection.Profiles[selectedIndex].Crosshair = importedCrosshair;
                         await UpdateCrosshair();
 
@@ -776,9 +868,5 @@ namespace CrosshairZ
                 Debug.WriteLine($"Error importing crosshair: {ex.Message}");
             }
         }
-
-
     }
-
-
 }
