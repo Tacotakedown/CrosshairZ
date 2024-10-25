@@ -1,5 +1,13 @@
 # CrosshairZ
 
+Crosshair overlay for nearly every app/game on Windows.
+
+- Runs in Xbox game bar
+- Profiles
+- Importing/Exporting crosshairs via codes
+
+![preview](https://raw.githubusercontent.com/Tacotakedown/CrosshairZ/refs/heads/main/Docs/preview.png)
+
 ## Requirements
 
 1. Xbox Game Bar
