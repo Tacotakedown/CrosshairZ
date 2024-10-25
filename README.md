@@ -11,7 +11,7 @@ Crosshair overlay for nearly every app/game on Windows.
 ## Requirements
 
 1. Xbox Game Bar
-2. VS 2022 with C# UWP workloads installed
+2. VS 2022 with C# UWP workloads installed (if building from source)
 
 ## Building
 
