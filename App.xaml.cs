@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
+
 namespace CrosshairZ
 {
 
@@ -62,7 +63,7 @@ namespace CrosshairZ
             }
         }
 
- 
+
         public void ShowMainPage()
         {
             Frame rootFrame = Window.Current.Content as Frame;

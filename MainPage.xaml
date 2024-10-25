@@ -1,128 +1,187 @@
-﻿<Page
-    x:Class="CrosshairZ.MainPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CrosshairZ"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="Transparent" >
-
+﻿<Page x:Class="CrosshairZ.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:CrosshairZ"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:win2d="using:Microsoft.Graphics.Canvas.UI.Xaml"
+      mc:Ignorable="d"
+      Background="Transparent">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="449*"/>
-            <ColumnDefinition Width="404*"/>
+            <ColumnDefinition Width="449*" />
+            <ColumnDefinition Width="404*" />
         </Grid.ColumnDefinitions>
-        <WebView x:Name="Crosshair" DefaultBackgroundColor="Transparent"  Source="ms-appx-web:///Assets/WebCrosshair.html" Grid.ColumnSpan="2" />
-
-
-        <StackPanel Spacing="20" x:Name="Guide">
-            <TextBlock Foreground="LightSteelBlue" Text="Ensure that click through is enabled and you pin the widget with the Pin icon"/>
-            <TextBlock Foreground="LightSteelBlue" TextWrapping="Wrap" Text="The app is automatically placed in the center of your screen upon opening hoever if you move it manually, the 'Center Crosshair' button will center it again"/>
-            <TextBlock Foreground="LightSteelBlue" Text="If your profiles fail to load, press the 'Refresh Profiles' button"/>
+        <win2d:CanvasControl x:Name="CrosshairCanvas"
+                             Background="Transparent"
+                             ClearColor="Transparent"
+                             Grid.ColumnSpan="2"
+                             Draw="OnDrawCrosshair" />
+        <StackPanel Spacing="20"
+                    x:Name="Guide">
+            <TextBlock Foreground="LightSteelBlue"
+                       Text="Ensure that click through is enabled and you pin the widget with the Pin icon" />
+            <TextBlock Foreground="LightSteelBlue"
+                       TextWrapping="Wrap"
+                       Text="The app is automatically placed in the center of your screen upon opening however if you move it manually, the 'Center Crosshair' button will center it again" />
+            <TextBlock Foreground="LightSteelBlue"
+                       Text="If your profiles fail to load, press the 'Refresh Profiles' button" />
         </StackPanel>
-
-
         <!-- Crosshair settings (sliders, toggles) -->
-        <StackPanel x:Name="settingsStackPanel" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="SteelBlue" BorderThickness="2" CornerRadius="10" Background="Black" Padding="5" Width="469" Grid.Column="1" Height="791">
+        <StackPanel x:Name="settingsStackPanel"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    BorderBrush="SteelBlue"
+                    BorderThickness="2"
+                    CornerRadius="10"
+                    Background="Black"
+                    Padding="5"
+                    Width="469"
+                    Grid.Column="1"
+                    Height="791">
             <TextBlock Text="Crosshair Length" />
-            <Slider x:Name="LengthSlider" StepFrequency="0.1" Minimum="0.0" Maximum="200.0" ValueChanged="LengthSlider_ValueChanged"/>
-
+            <Slider x:Name="LengthSlider"
+                    StepFrequency="0.1"
+                    Minimum="0.0"
+                    Maximum="200.0"
+                    ValueChanged="LengthSlider_ValueChanged" />
             <TextBlock Text="Crosshair Thickness" />
-            <Slider x:Name="ThicknessSlider" StepFrequency="0.1"  Minimum="0.0" Maximum="100.0" ValueChanged="ThicknessSlider_ValueChanged"/>
-
+            <Slider x:Name="ThicknessSlider"
+                    StepFrequency="0.1"
+                    Minimum="0.0"
+                    Maximum="100.0"
+                    ValueChanged="ThicknessSlider_ValueChanged" />
             <TextBlock Text="Dot Size" />
-            <Slider x:Name="DotSizeSlider" StepFrequency="0.1" Minimum="0.0" Maximum="100.0" ValueChanged="DotSizeSlider_ValueChanged"/>
-
-            <TextBlock Text="Gap"/>
-            <Slider x:Name="GapSlider" StepFrequency="0.1" Minimum="-100.0" Maximum="100.0" ValueChanged="GapSlider_ValueChanged"/>
-
-            <CheckBox x:Name="checkBoxBorder" Content="Show Border" Checked="checkBoxBorder_Checked" Unchecked="checkBoxBorder_Unchecked"/>
-
-            <TextBlock Text="BorderWidth"/>
-            <Slider x:Name="BorderSlider" StepFrequency="0.1" Minimum="0.0" Maximum="100.0" ValueChanged="BorderSlider_ValueChanged"/>
-
-
-
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="50">
+            <Slider x:Name="DotSizeSlider"
+                    StepFrequency="0.1"
+                    Minimum="0.0"
+                    Maximum="100.0"
+                    ValueChanged="DotSizeSlider_ValueChanged" />
+            <TextBlock Text="Gap" />
+            <Slider x:Name="GapSlider"
+                    StepFrequency="0.1"
+                    Minimum="-100.0"
+                    Maximum="100.0"
+                    ValueChanged="GapSlider_ValueChanged" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="50">
+                <CheckBox x:Name="CheckBoxBorder"
+                          Content="Show Border"
+                          Checked="CheckBoxBorder_Checked"
+                          Unchecked="CheckBoxBorder_Unchecked" />
+                <CheckBox x:Name="CheckBoxAA"
+                          Content="AntiAliasing"
+                          Checked="CheckBoxAA_Checked"
+                          Unchecked="CheckBoxAA_Unchecked" />
+            </StackPanel>
+            <TextBlock Text="BorderWidth" />
+            <Slider x:Name="BorderSlider"
+                    StepFrequency="0.1"
+                    Minimum="0.0"
+                    Maximum="100.0"
+                    ValueChanged="BorderSlider_ValueChanged" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="50">
                 <TextBlock Text="Crosshair Color" />
                 <TextBlock Text="Border Color" />
             </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Background="Black" BorderBrush="Transparent" HorizontalAlignment="Center" Margin="0,10,-80,-250" Height="447">
-                <ColorPicker  x:Name="ColorPicker" 
-                              Margin="-40,0,-100,0"
-                    ColorSpectrumShape="Ring"
-                    IsColorPreviewVisible="False"
-                    IsColorChannelTextInputVisible="False"
-                    IsAlphaEnabled="True"
-                    IsHexInputVisible="False" 
-                    ColorChanged="ColorPicker_ColorChanged" 
-                    BorderBrush="Transparent"
-                    Height="449" 
-                    Width="412">
+            <StackPanel Orientation="Horizontal"
+                        Background="Black"
+                        BorderBrush="Transparent"
+                        HorizontalAlignment="Center"
+                        Margin="0,10,-80,-250"
+                        Height="447">
+                <ColorPicker x:Name="ColorPicker"
+                             Margin="-40,0,-100,0"
+                             ColorSpectrumShape="Ring"
+                             IsColorPreviewVisible="False"
+                             IsColorChannelTextInputVisible="False"
+                             IsAlphaEnabled="True"
+                             IsHexInputVisible="False"
+                             ColorChanged="ColorPicker_ColorChanged"
+                             BorderBrush="Transparent"
+                             Height="449"
+                             Width="412">
                     <ColorPicker.RenderTransform>
-                        <ScaleTransform CenterX="180" CenterY="1" ScaleX=".6" ScaleY="0.9" />
+                        <ScaleTransform CenterX="180"
+                                        CenterY="1"
+                                        ScaleX=".6"
+                                        ScaleY="0.9" />
                     </ColorPicker.RenderTransform>
-
                 </ColorPicker>
-                <ColorPicker  x:Name="ColorPickerBorder" 
-                              Margin="-50,0,-50,0"
-                     ColorSpectrumShape="Ring"
-                     IsColorPreviewVisible="False"
-                     IsColorChannelTextInputVisible="False"
-                     IsAlphaEnabled="True"
-                     IsHexInputVisible="False" 
-                     ColorChanged="ColorPicker_ColorBorderChanged" 
-                     BorderBrush="Transparent"
-                     Height="449" 
-                     Width="412">
+                <ColorPicker x:Name="ColorPickerBorder"
+                             Margin="-50,0,-50,0"
+                             ColorSpectrumShape="Ring"
+                             IsColorPreviewVisible="False"
+                             IsColorChannelTextInputVisible="False"
+                             IsAlphaEnabled="False"
+                             IsHexInputVisible="False"
+                             ColorChanged="ColorPicker_ColorBorderChanged"
+                             BorderBrush="Transparent"
+                             Height="449"
+                             Width="412">
                     <ColorPicker.RenderTransform>
-                        <ScaleTransform CenterX="180" CenterY="1" ScaleX=".6" ScaleY="0.9" />
+                        <ScaleTransform CenterX="180"
+                                        CenterY="1"
+                                        ScaleX=".6"
+                                        ScaleY="0.9" />
                     </ColorPicker.RenderTransform>
-
                 </ColorPicker>
                 <StackPanel.RenderTransform>
-                    <ScaleTransform CenterX="180" CenterY="1" ScaleX=".6" ScaleY="0.4" />
+                    <ScaleTransform CenterX="180"
+                                    CenterY="1"
+                                    ScaleX=".6"
+                                    ScaleY="0.4" />
                 </StackPanel.RenderTransform>
             </StackPanel>
-
-
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="3" Width="130" >
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        Spacing="3"
+                        Width="130">
                 <TextBlock Text="Select Profile:" />
-                <ComboBox x:Name="ProfileSelector" SelectionChanged="ProfileSelector_SelectionChanged">
-
-                </ComboBox>
-
-                <Button Content="Save Profile" Click="SaveProfileButton_Click" />
-                <Button x:Name="deleteButton" Content="Delete Profile" Click="DeleteProfileButton_Click" Visibility="Collapsed" />
-                <Button x:Name="refreshProfile" Content="Refresh Profiles" Click="RefreshProfilesButton_Click"/>
-
-
-                <TextBlock x:Name="ProfileStatusMessage" Visibility="Collapsed" Foreground="Green"/>
+                <ComboBox x:Name="ProfileSelector"
+                          SelectionChanged="ProfileSelector_SelectionChanged" />
+                <Button Content="Save Profile"
+                        Click="SaveProfileButton_Click" />
+                <Button x:Name="deleteButton"
+                        Content="Delete Profile"
+                        Click="DeleteProfileButton_Click"
+                        Visibility="Collapsed" />
+                <Button x:Name="refreshProfile"
+                        Content="Refresh Profiles"
+                        Click="RefreshProfilesButton_Click" />
+                <TextBlock x:Name="ProfileStatusMessage"
+                           Visibility="Collapsed"
+                           Foreground="Green" />
             </StackPanel>
-
-            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock x:Name="ImportStatusMessage" Text="Invalid Code!" 
-Foreground="Red" 
- Visibility="Collapsed" 
-FontWeight="Bold"/>
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <TextBlock x:Name="ImportStatusMessage"
+                           Text="Invalid Code!"
+                           Foreground="Red"
+                           Visibility="Collapsed"
+                           FontWeight="Bold" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                <Button Content="Export Crosshair" Click="ExportCrosshairButton_Click" Margin="0,0,5,0" />
-                <Button Content="Import Crosshair" Click="ImportCrosshairButton_Click" Margin="0,0,5,0" />
-
-
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,10,0,0">
+                <Button Content="Export Crosshair"
+                        Click="ExportCrosshairButton_Click"
+                        Margin="0,0,5,0" />
+                <Button Content="Import Crosshair"
+                        Click="ImportCrosshairButton_Click"
+                        Margin="0,0,5,0" />
             </StackPanel>
-
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Background="SteelBlue" x:Name="CenterCrosshair" Content="Center Crosshair" Click="CenterCrosshair_Click" Margin="5" />
-
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <Button Background="SteelBlue"
+                        x:Name="CenterCrosshair"
+                        Content="Center Crosshair"
+                        Click="CenterCrosshair_Click"
+                        Margin="5" />
             </StackPanel>
-
-
         </StackPanel>
     </Grid>
 </Page>
