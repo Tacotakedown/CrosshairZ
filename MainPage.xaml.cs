@@ -167,7 +167,7 @@ namespace CrosshairZ
                     if (initialized)
                     {
                         await UpdateCrosshair();
-                        if(isLinked)
+                        if (isLinked)
                         {
                             WidthSlider.Value = e.NewValue;
                         }
@@ -209,13 +209,13 @@ namespace CrosshairZ
 
         private void OnLinkButtonClick(object sender, RoutedEventArgs e)
         {
-           
+
             isLinked = !isLinked;
 
-   
+
             if (isLinked)
             {
-                LinkButton.Content = "🔗"; 
+                LinkButton.Content = "🔗";
                 WidthSlider.Value = HeightSlider.Value;
             }
             else
@@ -396,6 +396,10 @@ namespace CrosshairZ
 
         private void OnDrawCrosshair(CanvasControl sender, CanvasDrawEventArgs args)
         {
+            if (mProfileCollection.Profiles.Count == 0)
+            {
+                return;
+            }
             if (ProfileSelector != null)
             {
                 int selectedIndex = (ProfileSelector.SelectedIndex == -1) ? 0 : ProfileSelector.SelectedIndex;
@@ -745,7 +749,7 @@ namespace CrosshairZ
 
             var height = mProfileCollection.Profiles[selectedIndex].Crosshair.Height;
             var width = mProfileCollection.Profiles[selectedIndex].Crosshair.Width;
-            if (Math.Round( width,2) != Math.Round(height, 2))
+            if (Math.Round(width, 2) != Math.Round(height, 2))
             {
                 isLinked = false;
                 LinkButton.Content = "🔓";
