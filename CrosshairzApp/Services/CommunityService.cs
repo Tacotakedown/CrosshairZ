@@ -36,7 +36,7 @@ namespace CrosshairZ.Services
 
     public class CommunityService
     {
-        private const string BaseUrl = "http://localhost:7373";
+        private const string BaseUrl = "https://crosshairz-server.fly.dev";
         private static readonly HttpClient _http = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
 
         public static async Task<CommunityListResponse> GetCrosshairsAsync(

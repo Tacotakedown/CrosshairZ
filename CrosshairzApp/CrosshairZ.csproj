@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-          Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -20,14 +18,20 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <PackageCertificateThumbprint />
-    <PackageCertificateKeyFile>CrosshairZ_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>
+    </PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>CrosshairZ_SideloadKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificatePassword>
+    </PackageCertificatePassword>
+    <AppxBundle>Never</AppxBundle>
+    <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
@@ -36,7 +40,6 @@
     <PlatformTarget>x64</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -46,7 +49,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -61,7 +63,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -75,7 +76,6 @@
       <SubType>Designer</SubType>
     </AppxManifest>
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Assets\Icons\icon.targetsize-16.png" />
     <Content Include="Assets\Icons\icon.targetsize-20.png" />
@@ -92,37 +92,28 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Native\x64\crosshair_ffi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Gaming.XboxGameBar" Version="5.6.210414002" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.12" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Win2D.uwp" Version="1.28.0" />
   </ItemGroup>
-
   <ItemGroup>
-    <None Include="CrosshairZ_TemporaryKey.pfx" />
+    <None Include="CrosshairZ_SideloadKey.pfx" />
   </ItemGroup>
-
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-
   <Target Name="CopyRustFfi" BeforeTargets="BeforeBuild;Build">
     <PropertyGroup>
       <RustDllSource>$(MSBuildProjectDirectory)\..\target\release\crosshair_ffi.dll</RustDllSource>
       <RustDllDest>$(MSBuildProjectDirectory)\Native\x64\crosshair_ffi.dll</RustDllDest>
     </PropertyGroup>
-
     <Exec Command="cargo build --release" WorkingDirectory="$(MSBuildProjectDirectory)\.." />
-
     <MakeDir Directories="$(MSBuildProjectDirectory)\Native\x64" />
-    <Copy SourceFiles="$(RustDllSource)"
-          DestinationFiles="$(RustDllDest)"
-          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(RustDllSource)" DestinationFiles="$(RustDllDest)" SkipUnchangedFiles="true" />
   </Target>
 </Project>

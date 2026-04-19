@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 use sqlx::{SqlitePool, sqlite::SqlitePoolOptions};
 use tower_http::cors::{Any, CorsLayer};
 
-const PORT: u16 = 7373;
 const DB_PATH: &str = "crosshairz_community.db";
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
@@ -255,9 +254,22 @@ async fn migrate(pool: &SqlitePool) {
 
 #[tokio::main]
 async fn main() {
+    let port: u16 = std::env::var("PORT")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(7373);
+
+    let db_path = std::env::var("DB_PATH").unwrap_or_else(|_| {
+        if std::path::Path::new("/data").exists() {
+            "/data/crosshairz_community.db".to_owned()
+        } else {
+            DB_PATH.to_owned()
+        }
+    });
+
     let pool = SqlitePoolOptions::new()
         .max_connections(8)
-        .connect(&format!("sqlite:{DB_PATH}?mode=rwc"))
+        .connect(&format!("sqlite:{db_path}?mode=rwc"))
         .await
         .expect("Failed to open SQLite database");
 
@@ -276,8 +288,8 @@ async fn main() {
         .layer(cors)
         .with_state(pool);
 
-    let addr = format!("0.0.0.0:{PORT}");
-    println!("crosshair-server listening on {addr}");
+    let addr = format!("0.0.0.0:{port}");
+    println!("crosshair-server listening on {addr}  db={db_path}");
     let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .expect("bind failed");
