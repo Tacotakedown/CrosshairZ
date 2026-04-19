@@ -1,0 +1,794 @@
+﻿<Page
+    x:Class="CrosshairZ.MainPage"
+    x:Name="RootPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    mc:Ignorable="d"
+    Background="{StaticResource PageBackgroundBrush}">
+
+    <Page.Resources>
+        <Style x:Key="TabBtnStyle" TargetType="RadioButton">
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Root"
+                                Background="Transparent"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Padding="{TemplateBinding Padding}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#22FFFFFF" />
+                                            <Setter Target="ContentText.Foreground" Value="#FFCCDCEE" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#33FFFFFF" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Checked">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#FF1F2A38" />
+                                            <Setter Target="ContentText.Foreground" Value="White" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Unchecked">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentText.Foreground" Value="#FF8899AA" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Indeterminate" />
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <TextBlock x:Name="ContentText"
+                                       Text="{TemplateBinding Content}"
+                                       Foreground="#FF8899AA"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Page.Resources>
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border x:Name="NavBar"
+                Grid.Row="0"
+                Background="#FF0D1117"
+                BorderBrush="{StaticResource PanelBorderBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid Padding="12,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="CrosshairZ"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               VerticalAlignment="Center"
+                               Margin="0,0,12,0" />
+                    <RadioButton x:Name="HomeTabBtn"
+                                 Content="Home"
+                                 GroupName="MainTabs"
+                                 IsChecked="True"
+                                 Style="{StaticResource TabBtnStyle}"
+                                 Checked="Tab_Changed" />
+                    <RadioButton x:Name="CustomTabBtn"
+                                 Content="Custom Crosshairs"
+                                 GroupName="MainTabs"
+                                 Style="{StaticResource TabBtnStyle}"
+                                 Checked="Tab_Changed" />
+                    <RadioButton x:Name="CommunityTabBtn"
+                                 Content="Gallery"
+                                 GroupName="MainTabs"
+                                 Style="{StaticResource TabBtnStyle}"
+                                 Checked="Tab_Changed" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <TextBlock x:Name="StatusText"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource SubtleBrush}"
+                               FontSize="12" />
+                    <Button x:Name="CenterButton" Content="Center" Click="CenterButton_Click" Padding="8,6" />
+                    <Button Content="Placement" Click="PlacementModeButton_Click" Padding="8,6" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid x:Name="ContentGrid" Grid.Row="1" Background="#FF0A0D12">
+
+            <canvas:CanvasControl
+                x:Name="PreviewCanvas"
+                ClearColor="Transparent"
+                Draw="PreviewCanvas_Draw"
+                PointerPressed="EditorCanvas_PointerPressed"
+                PointerMoved="EditorCanvas_PointerMoved"
+                PointerReleased="EditorCanvas_PointerReleased" />
+
+            <Grid x:Name="HomeContent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="340" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" IsHitTestVisible="False" />
+
+                <Border Grid.Column="1"
+                        Background="{StaticResource PageBackgroundBrush}"
+                        BorderBrush="{StaticResource PanelBorderBrush}"
+                        BorderThickness="1,0,0,0">
+                    <ScrollViewer x:Name="SettingsScrollViewer" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="SettingsPanel" Spacing="14" Padding="16">
+
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,2">
+                                <Button x:Name="CopyShareCodeButton" Content="Copy Code"  Click="CopyShareCodeButton_Click" />
+                                <Button x:Name="PasteShareCodeButton" Content="Paste Code" Click="PasteShareCodeButton_Click" />
+                            </StackPanel>
+
+                            <Border Background="{StaticResource PanelBrush}"
+                                    BorderBrush="{StaticResource PanelBorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Profiles" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+                                    <ComboBox x:Name="ProfileSelector"
+                                              HorizontalAlignment="Stretch"
+                                              SelectionChanged="ProfileSelector_SelectionChanged"
+                                              DisplayMemberPath="Name" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Content="New"       Click="NewProfileButton_Click" />
+                                        <Button Content="Delete"    Click="DeleteProfileButton_Click" />
+                                        <Button Content="Duplicate" Click="DuplicateProfileButton_Click" />
+                                        <Button Content="Rename"    Click="RenameProfileButton_Click" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{StaticResource PanelBrush}"
+                                    BorderBrush="{StaticResource PanelBorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Style" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+
+                                    <ToggleSwitch x:Name="EnabledToggle" Header="Enabled" Toggled="AnyControl_Changed" IsOn="True" />
+
+                                    <TextBlock Text="Crosshair type" Foreground="White" />
+                                    <ComboBox x:Name="StyleCombo"
+                                              HorizontalAlignment="Stretch"
+                                              SelectionChanged="StyleCombo_Changed">
+                                        <ComboBoxItem Content="Classic +"      Tag="classic"      />
+                                        <ComboBoxItem Content="Circle"         Tag="circle"       />
+                                        <ComboBoxItem Content="Dot"            Tag="dot"          />
+                                        <ComboBoxItem Content="Diagonal X"     Tag="diagonal_x"   />
+                                        <ComboBoxItem Content="Box"            Tag="square"       />
+                                        <ComboBoxItem Content="Circle + Cross" Tag="circle_cross" />
+                                        <ComboBoxItem Content="Custom"         Tag="custom"       />
+                                    </ComboBox>
+
+                                    <StackPanel x:Name="ArmPanel" Spacing="6">
+                                        <TextBlock Text="Arms" Foreground="{StaticResource SubtleBrush}" FontSize="12" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <ToggleSwitch x:Name="TopToggle"    Header="Top"    Toggled="AnyControl_Changed" IsOn="True" MinWidth="90" />
+                                            <ToggleSwitch x:Name="BottomToggle" Header="Bottom" Toggled="AnyControl_Changed" IsOn="True" MinWidth="90" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <ToggleSwitch x:Name="LeftToggle"   Header="Left"   Toggled="AnyControl_Changed" IsOn="True" MinWidth="90" />
+                                            <ToggleSwitch x:Name="RightToggle"  Header="Right"  Toggled="AnyControl_Changed" IsOn="True" MinWidth="90" />
+                                        </StackPanel>
+
+                                        <Grid Margin="0,4,0,0">
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Width" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="WidthLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="WidthSlider"     Minimum="0" Maximum="128" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Height" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="HeightLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="HeightSlider"    Minimum="0" Maximum="128" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Thickness" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="ThicknessLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="ThicknessSlider" Minimum="0.5" Maximum="24" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Gap" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="GapLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="GapSlider"       Minimum="0" Maximum="64" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+                                    </StackPanel>
+
+                                    <StackPanel x:Name="CirclePanel" Spacing="6" Visibility="Collapsed">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Radius / Size" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="CircleRadiusLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="CircleRadiusSlider"    Minimum="4" Maximum="120" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Ring thickness" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="CircleThicknessLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="CircleThicknessSlider" Minimum="0.5" Maximum="24" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+                                    </StackPanel>
+
+                                    <ToggleSwitch x:Name="CenterDotToggle" Header="Center dot" Toggled="AnyControl_Changed" IsOn="True" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Center dot radius" Foreground="White" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="DotLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                    </Grid>
+                                    <Slider x:Name="DotSlider" Minimum="0" Maximum="24" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{StaticResource PanelBrush}"
+                                    BorderBrush="{StaticResource PanelBorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Inner Lines" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+                                    <TextBlock Text="Short inner segments between center and gap  useful as spread indicators."
+                                               Foreground="{StaticResource SubtleBrush}" FontSize="11" TextWrapping="Wrap" />
+
+                                    <ToggleSwitch x:Name="InnerLinesToggle" Header="Enable inner lines" Toggled="AnyControl_Changed" IsOn="False" />
+
+                                    <StackPanel x:Name="InnerLinesDetailPanel" Spacing="6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Length" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="ILLengthLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="ILLengthSlider"    Minimum="0" Maximum="64"  StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Thickness" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="ILThicknessLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="ILThicknessSlider" Minimum="0.5" Maximum="24" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                            <TextBlock Text="Gap from center" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="ILGapLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                        </Grid>
+                                        <Slider x:Name="ILGapSlider"       Minimum="0" Maximum="64"  StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{StaticResource PanelBrush}"
+                                    BorderBrush="{StaticResource PanelBorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Rotation" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Static offset (&#xB0;)" Foreground="White" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="RotationLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                    </Grid>
+                                    <Slider x:Name="RotationSlider" Minimum="-180" Maximum="180" StepFrequency="1" ValueChanged="AnyControl_Changed" />
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Spin speed (&#xB0;/s)" Foreground="White" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="SpinLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                    </Grid>
+                                    <Slider x:Name="RotationSpeedSlider" Minimum="0" Maximum="360" StepFrequency="1" ValueChanged="AnyControl_Changed" />
+                                    <TextBlock Text="Set spin speed &gt; 0 to animate rotation in the overlay."
+                                               Foreground="{StaticResource SubtleBrush}" FontSize="11" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{StaticResource PanelBrush}"
+                                    BorderBrush="{StaticResource PanelBorderBrush}"
+                                    BorderThickness="1" CornerRadius="14" Padding="14">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Appearance" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Opacity" Foreground="White" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="OpacityLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                    </Grid>
+                                    <Slider x:Name="OpacitySlider" Minimum="0" Maximum="1" StepFrequency="0.01" ValueChanged="AnyControl_Changed" />
+
+                                    <ToggleSwitch x:Name="OutlineToggle" Header="Outline" Toggled="AnyControl_Changed" IsOn="True" />
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Outline thickness" Foreground="White" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="OutlineLabel" Grid.Column="1" Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                    </Grid>
+                                    <Slider x:Name="OutlineSlider" Minimum="0" Maximum="12" StepFrequency="0.5" ValueChanged="AnyControl_Changed" />
+
+                                    <TextBlock Text="Crosshair color" Foreground="White" Margin="0,6,0,0"/>
+                                    <ColorPicker x:Name="CrosshairColorPicker"
+                                                 ColorSpectrumShape="Ring"
+                                                 IsAlphaEnabled="False"
+                                                 ColorChanged="AnyControl_Changed" />
+
+                                    <TextBlock Text="Outline color" Foreground="White" Margin="0,6,0,0"/>
+                                    <ColorPicker x:Name="OutlineColorPicker"
+                                                 ColorSpectrumShape="Ring"
+                                                 IsAlphaEnabled="False"
+                                                 ColorChanged="AnyControl_Changed" />
+                                </StackPanel>
+                            </Border>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <Grid x:Name="CustomContent" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="320" />
+                </Grid.ColumnDefinitions>
+
+                <Border x:Name="EditorToolbar"
+                        Grid.Column="0"
+                        VerticalAlignment="Bottom"
+                        Background="#FF0D1117"
+                        BorderBrush="#FF212733"
+                        BorderThickness="0,1,0,0"
+                        Padding="8,10,8,8">
+                    <StackPanel Spacing="8">
+
+                        <StackPanel Orientation="Horizontal" Spacing="4" FlowDirection="LeftToRight">
+                            <TextBlock Text="Tool:" VerticalAlignment="Center"
+                                       Foreground="{StaticResource SubtleBrush}" Margin="0,0,4,0"/>
+                            <RadioButton x:Name="ToolSelect"   Content="Select"  GroupName="EditorTool"
+                                         IsChecked="True" Checked="EditorTool_Changed"
+                                         ToolTipService.ToolTip="Select / Move" />
+                            <RadioButton x:Name="ToolLine"     Content="Line"    GroupName="EditorTool"
+                                         Checked="EditorTool_Changed"
+                                         ToolTipService.ToolTip="Draw Line" />
+                            <RadioButton x:Name="ToolCircle"   Content="Circle"  GroupName="EditorTool"
+                                         Checked="EditorTool_Changed"
+                                         ToolTipService.ToolTip="Draw Circle" />
+                            <RadioButton x:Name="ToolRect"     Content="Rect"    GroupName="EditorTool"
+                                         Checked="EditorTool_Changed"
+                                         ToolTipService.ToolTip="Draw Rectangle" />
+                            <RadioButton x:Name="ToolTriangle" Content="Tri"     GroupName="EditorTool"
+                                         Checked="EditorTool_Changed"
+                                         ToolTipService.ToolTip="Draw Triangle" />
+
+                            <Border Width="1" Background="#FF444444" Margin="6,2" />
+
+                            <Button x:Name="UndoButton"        Content="Undo"   Click="UndoButton_Click"
+                                    ToolTipService.ToolTip="Undo (Ctrl+Z)" />
+                            <Button x:Name="DeleteShapeButton" Content="Delete" Click="DeleteShapeButton_Click"
+                                    ToolTipService.ToolTip="Delete selected shape (Del)" />
+                            <Button x:Name="ClearShapesButton" Content="Clear"  Click="ClearShapesButton_Click"
+                                    ToolTipService.ToolTip="Clear all shapes" />
+
+                            <Border Width="1" Background="#FF444444" Margin="6,2" />
+
+                            <Button x:Name="CloseEditorButton" Content="Done" Click="CloseEditorButton_Click" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <ToggleSwitch x:Name="AngleSnapToggle" Header="Snap" IsOn="True"
+                                          MinWidth="90" Toggled="EditorOption_Changed"
+                                          ToolTipService.ToolTip="Snap line angles to fixed increments" />
+                            <ComboBox x:Name="SnapAngleCombo" VerticalAlignment="Center" Width="72"
+                                      SelectionChanged="SnapAngleCombo_Changed"
+                                      ToolTipService.ToolTip="Snap angle increment">
+                                <ComboBoxItem Content="5&#xB0;"    Tag="5"    />
+                                <ComboBoxItem Content="10&#xB0;"   Tag="10"   IsSelected="True" />
+                                <ComboBoxItem Content="15&#xB0;"   Tag="15"   />
+                                <ComboBoxItem Content="22.5&#xB0;" Tag="22.5" />
+                                <ComboBoxItem Content="30&#xB0;"   Tag="30"   />
+                                <ComboBoxItem Content="45&#xB0;"   Tag="45"   />
+                            </ComboBox>
+                            <ComboBox x:Name="ZoomCombo" VerticalAlignment="Center" Width="72"
+                                      SelectionChanged="ZoomCombo_Changed"
+                                      ToolTipService.ToolTip="Canvas zoom">
+                                <ComboBoxItem Content="1x" Tag="1" />
+                                <ComboBoxItem Content="2x" Tag="2" />
+                                <ComboBoxItem Content="4x" Tag="4" IsSelected="True" />
+                                <ComboBoxItem Content="6x" Tag="6" />
+                                <ComboBoxItem Content="8x" Tag="8" />
+                            </ComboBox>
+                            <ToggleSwitch x:Name="GridToggle" Header="Grid" IsOn="True"
+                                          MinWidth="80" Toggled="EditorOption_Changed"
+                                          ToolTipService.ToolTip="Show canvas grid" />
+                            <TextBlock x:Name="ShapeCountLabel" VerticalAlignment="Center"
+                                       Foreground="{StaticResource SubtleBrush}" FontSize="11" />
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="EditorPropsPanel"
+                        Grid.Column="1"
+                        Background="{StaticResource PageBackgroundBrush}"
+                        BorderBrush="{StaticResource PanelBorderBrush}"
+                        BorderThickness="1,0,0,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="10" Padding="16">
+                            <TextBlock Text="Shape Properties" FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{StaticResource AccentBrush}" />
+                            <TextBlock x:Name="EditorHintText"
+                                       Text="Select a shape or draw a new one."
+                                       Foreground="{StaticResource SubtleBrush}" FontSize="11"
+                                       TextWrapping="Wrap" />
+
+                            <StackPanel x:Name="ShapePropsContent" Spacing="8">
+                                <TextBlock Text="Color" Foreground="White" />
+                                <Button x:Name="ShapeColorButton" HorizontalAlignment="Stretch">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border x:Name="ShapeColorSwatch" Width="20" Height="20"
+                                                    CornerRadius="4" Background="White" />
+                                            <TextBlock Text="Choose color&#x2026;" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button.Content>
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <StackPanel Spacing="10" MaxWidth="300">
+                                                <TextBlock Text="Quick Colors" FontSize="11"
+                                                           Foreground="{StaticResource SubtleBrush}" />
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="Neon" FontSize="10"
+                                                               Foreground="{StaticResource SubtleBrush}" />
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <Button Tag="#FF00FF41" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF00FF41"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FF00EAFF" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF00EAFF"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFFF00C8" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFF00C8"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFFFFF00" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFFFF00"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFFF6A00" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFF6A00"/></Button.Background>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="Classic" FontSize="10"
+                                                               Foreground="{StaticResource SubtleBrush}" />
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <Button Tag="#FFFFFFFF" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFFFFFF"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFCCCCCC" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFCCCCCC"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFFF4444" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFF4444"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FF44AAFF" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF44AAFF"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FF44FF88" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF44FF88"/></Button.Background>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="Warm" FontSize="10"
+                                                               Foreground="{StaticResource SubtleBrush}" />
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <Button Tag="#FFFF2020" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFF2020"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFFF8C00" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFF8C00"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFFFD700" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFFD700"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFFF69B4" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFFF69B4"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FFB22222" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FFB22222"/></Button.Background>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="Cool" FontSize="10"
+                                                               Foreground="{StaticResource SubtleBrush}" />
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <Button Tag="#FF1E90FF" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF1E90FF"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FF00CED1" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF00CED1"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FF9370DB" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF9370DB"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FF4169E1" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF4169E1"/></Button.Background>
+                                                        </Button>
+                                                        <Button Tag="#FF00FA9A" Click="ShapeSwatchBtn_Click" Padding="0" Width="24" Height="24" CornerRadius="4">
+                                                            <Button.Background><SolidColorBrush Color="#FF00FA9A"/></Button.Background>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <TextBlock Text="Custom" FontSize="11"
+                                                           Foreground="{StaticResource SubtleBrush}" />
+                                                <ColorPicker x:Name="ShapeColorPicker"
+                                                             IsAlphaEnabled="True"
+                                                             ColorSpectrumShape="Ring"
+                                                             ColorChanged="ShapeColor_Changed" />
+                                            </StackPanel>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Thickness" Foreground="White" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="ShapeThicknessLabel" Grid.Column="1"
+                                               Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                </Grid>
+                                <Slider x:Name="ShapeThicknessSlider"
+                                        Minimum="0.5" Maximum="32" StepFrequency="0.5"
+                                        ValueChanged="ShapeProp_Changed" />
+
+                                <ToggleSwitch x:Name="ShapeFilledToggle" Header="Filled"
+                                              IsOn="False" Toggled="ShapeProp_Changed" />
+
+                                <ToggleSwitch x:Name="ShapeOutlineToggle" Header="Outline"
+                                              IsOn="True" Toggled="ShapeProp_Changed" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Outline thickness" Foreground="White"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="ShapeOutlineThicknessLabel" Grid.Column="1"
+                                               Foreground="{StaticResource SubtleBrush}" FontSize="11"/>
+                                </Grid>
+                                <Slider x:Name="ShapeOutlineThicknessSlider"
+                                        Minimum="0.5" Maximum="12" StepFrequency="0.5"
+                                        ValueChanged="ShapeProp_Changed" />
+
+                                <TextBlock Text="Outline color" Foreground="White" />
+                                <Button x:Name="ShapeOutlineColorButton" HorizontalAlignment="Stretch">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border x:Name="ShapeOutlineColorSwatch" Width="20" Height="20"
+                                                    CornerRadius="4" Background="Black" />
+                                            <TextBlock Text="Choose outline color&#x2026;" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button.Content>
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <ColorPicker x:Name="ShapeOutlineColorPicker"
+                                                         IsAlphaEnabled="True"
+                                                         ColorSpectrumShape="Ring"
+                                                         ColorChanged="ShapeOutlineColor_Changed" />
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <Grid x:Name="CommunityContent" Visibility="Collapsed" Background="{StaticResource PageBackgroundBrush}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Padding="20" Spacing="20">
+
+                        <StackPanel Spacing="10">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="Featured" FontSize="18" FontWeight="SemiBold" Foreground="White" />
+                                <TextBlock Text="Built-in presets — load directly into your active profile."
+                                           Foreground="{StaticResource SubtleBrush}" FontSize="12" />
+                            </StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Grid.Column="0" CornerRadius="10" Background="#FF11151B"
+                                        BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1"
+                                        Padding="10" Margin="0,0,5,5">
+                                    <StackPanel Spacing="6">
+                                        <Border Background="#FF0A0D12" CornerRadius="6" Height="60">
+                                            <TextBlock Text="+" FontSize="22" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Default" FontWeight="SemiBold" Foreground="White" FontSize="12" />
+                                        <Button Content="Load" HorizontalAlignment="Stretch" Tag="default" Click="PresetButton_Click" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Row="0" Grid.Column="1" CornerRadius="10" Background="#FF11151B"
+                                        BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1"
+                                        Padding="10" Margin="2,0,3,5">
+                                    <StackPanel Spacing="6">
+                                        <Border Background="#FF0A0D12" CornerRadius="6" Height="60">
+                                            <TextBlock Text="+" FontSize="22" Foreground="#FF00FF41"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="CS2" FontWeight="SemiBold" Foreground="White" FontSize="12" />
+                                        <Button Content="Load" HorizontalAlignment="Stretch" Tag="cs2" Click="PresetButton_Click" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Row="0" Grid.Column="2" CornerRadius="10" Background="#FF11151B"
+                                        BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1"
+                                        Padding="10" Margin="2,0,3,5">
+                                    <StackPanel Spacing="6">
+                                        <Border Background="#FF0A0D12" CornerRadius="6" Height="60">
+                                            <TextBlock Text="+" FontSize="22" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Valorant" FontWeight="SemiBold" Foreground="White" FontSize="12" />
+                                        <Button Content="Load" HorizontalAlignment="Stretch" Tag="valorant" Click="PresetButton_Click" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Row="0" Grid.Column="3" CornerRadius="10" Background="#FF11151B"
+                                        BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1"
+                                        Padding="10" Margin="5,0,0,5">
+                                    <StackPanel Spacing="6">
+                                        <Border Background="#FF0A0D12" CornerRadius="6" Height="60">
+                                            <TextBlock Text="." FontSize="30" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Dot" FontWeight="SemiBold" Foreground="White" FontSize="12" />
+                                        <Button Content="Load" HorizontalAlignment="Stretch" Tag="dot" Click="PresetButton_Click" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="0" CornerRadius="10" Background="#FF11151B"
+                                        BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1"
+                                        Padding="10" Margin="0,0,5,0">
+                                    <StackPanel Spacing="6">
+                                        <Border Background="#FF0A0D12" CornerRadius="6" Height="60">
+                                            <TextBlock Text="&#x25CB;" FontSize="22" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Circle" FontWeight="SemiBold" Foreground="White" FontSize="12" />
+                                        <Button Content="Load" HorizontalAlignment="Stretch" Tag="circle" Click="PresetButton_Click" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="1" CornerRadius="10" Background="#FF11151B"
+                                        BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1"
+                                        Padding="10" Margin="2,0,3,0">
+                                    <StackPanel Spacing="6">
+                                        <Border Background="#FF0A0D12" CornerRadius="6" Height="60">
+                                            <TextBlock Text="&#x2295;" FontSize="22" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Circle Cross" FontWeight="SemiBold" Foreground="White" FontSize="12" />
+                                        <Button Content="Load" HorizontalAlignment="Stretch" Tag="circle_cross" Click="PresetButton_Click" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="2" CornerRadius="10" Background="#FF11151B"
+                                        BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1"
+                                        Padding="10" Margin="2,0,3,0">
+                                    <StackPanel Spacing="6">
+                                        <Border Background="#FF0A0D12" CornerRadius="6" Height="60">
+                                            <TextBlock Text="&#xD7;" FontSize="22" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="X Shape" FontWeight="SemiBold" Foreground="White" FontSize="12" />
+                                        <Button Content="Load" HorizontalAlignment="Stretch" Tag="x_shape" Click="PresetButton_Click" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Row="1" Grid.Column="3" CornerRadius="10" Background="#FF11151B"
+                                        BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1"
+                                        Padding="10" Margin="5,0,0,0">
+                                    <StackPanel Spacing="6">
+                                        <Border Background="#FF0A0D12" CornerRadius="6" Height="60">
+                                            <TextBlock Text="&#x25A1;" FontSize="22" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="Box" FontWeight="SemiBold" Foreground="White" FontSize="12" />
+                                        <Button Content="Load" HorizontalAlignment="Stretch" Tag="box" Click="PresetButton_Click" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+
+                        <Border Height="1" Background="{StaticResource PanelBorderBrush}" />
+
+                        <StackPanel Spacing="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="Community" FontSize="18" FontWeight="SemiBold" Foreground="White" />
+                                    <TextBlock x:Name="CommunityStatusText"
+                                               Text="Crosshairs shared by the community."
+                                               Foreground="{StaticResource SubtleBrush}" FontSize="12" />
+                                </StackPanel>
+                                <Button Grid.Column="1" x:Name="ShareCrosshairButton"
+                                        Content="Share Yours"
+                                        VerticalAlignment="Center"
+                                        Click="ShareCrosshairButton_Click" />
+                            </Grid>
+
+                            <ItemsControl x:Name="CommunityTilesPanel">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapGrid Orientation="Horizontal" ItemWidth="150" MaximumRowsOrColumns="4" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+
+                            <Border x:Name="CommunityOfflineBanner"
+                                    CornerRadius="8" Background="#22FFFFFF"
+                                    Padding="16,12" Visibility="Collapsed">
+                                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                    <TextBlock Text="Server offline" FontWeight="SemiBold" Foreground="White"
+                                               HorizontalAlignment="Center" />
+                                    <TextBlock Text="Start crosshair-server to browse and share crosshairs."
+                                               Foreground="{StaticResource SubtleBrush}" FontSize="12"
+                                               HorizontalAlignment="Center" TextWrapping="Wrap" />
+                                    <Button Content="Retry" HorizontalAlignment="Center"
+                                            Click="CommunityRetry_Click" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <Button x:Name="ExitPlacementButton"
+                    Content="Exit Placement"
+                    Visibility="Collapsed"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="12"
+                    Click="ExitPlacementButton_Click"
+                    Background="#CC1E2430"
+                    Foreground="#FFFFFFFF" />
+
+        </Grid>
+    </Grid>
+</Page>

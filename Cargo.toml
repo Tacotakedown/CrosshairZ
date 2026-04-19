@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/crosshair-core",
+  "crates/crosshair-ipc",
+  "crates/crosshair-ffi",
+  "crates/crosshair-server",
+]
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+authors = ["Tacotakedown"]
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+base64 = "0.22"
+flate2 = "1"
