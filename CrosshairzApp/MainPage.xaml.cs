@@ -731,7 +731,7 @@ namespace CrosshairZ
                     : new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 10, 13, 18));
 
             if (!isFull && _editorMode) ExitEditorMode();
-            PreviewCanvas.Invalidate();
+            RefreshPreview();
         }
 
         private void PlacementModeButton_Click(object sender, RoutedEventArgs e) => SetUIMode(UIMode.Placement);
